@@ -2,7 +2,7 @@ services:
   wrnum_postgre:
     image: postgres:13
     volumes:
-      - ~/.pg/pg_data/flask-yt:/var/lib/postgresql/data
+      - ./pg_data/flask-yt:/var/lib/postgresql/data
     ports:
       - "54321:5432"
     restart: always
