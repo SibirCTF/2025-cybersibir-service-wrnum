@@ -20,7 +20,7 @@ class Config(object):
     
     USER = os.environ.get('POSTGRES_USER', 'administrator')
     PASSWORD = os.environ.get('POSTGRES_PASSWORD', 'qwerty')
-    HOST = os.environ.get('POSTGRES_HOST', '127.0.0.1')
+    HOST = os.environ.get('POSTGRES_HOST', 'wrnum_postgre')
     PORT = os.environ.get('POSTGRES_PORT', '5532')
     DB = os.environ.get('POSTGRES_DB', 'wrongnumber')
 

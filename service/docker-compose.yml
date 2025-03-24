@@ -1,43 +1,48 @@
 services:
-  postgres:
-    image: postgres
-    container_name: postgres
+  wrnum_postgre:
+    image: postgres:13
     volumes:
       - ~/.pg/pg_data/flask-yt:/var/lib/postgresql/data
     ports:
       - "54321:5432"
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=qwerty
+      - POSTGRES_HOST_AUTH_METHOD=trust
     networks:
       - wrnum_net
 
-  flask:
+  wrnum_flask:
     build:
       dockerfile: Dockerfile
       context: .
-    container_name: flask
+    container_name: wrnum_flask0
     volumes:
       - ~/.uploads/images/flask-yt:/app/app/static/upload
     environment:
-      - POSTGRES_HOST=postgres
+      - POSTGRES_HOST=wrnum_postgre
       - POSTGRES_PORT=5432
       - POSTGRES_USER=administrator
       - POSTGRES_PASSWORD=qwerty
       - POSTGRES_DB=wrongnumber
     depends_on:
-      - postgres
+      - wrnum_postgre
     expose:
       - 9855
+    restart: always
     networks:
       - wrnum_net
 
-  nginx:
+  wrnum_nginx:
     build:
       dockerfile: ./Dockerfile
       context: ./nginx/
-    container_name: nginx
+    container_name: wrnum_nginx0
     depends_on:
-      - flask
+      - wrnum_flask
     ports:
       - "9853:80"
+    restart: always
     networks:
       - wrnum_net
 
