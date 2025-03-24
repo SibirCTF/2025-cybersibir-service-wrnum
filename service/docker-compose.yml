@@ -1,7 +1,8 @@
 services:
   wrnum_postgre:
-    image: postgres:13
+    image: postgres:15
     volumes:
+      - ./init_scripts/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
       - ./pg_data/flask-yt:/var/lib/postgresql/data
     ports:
       - "54321:5432"
