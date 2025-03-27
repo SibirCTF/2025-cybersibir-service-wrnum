@@ -8,7 +8,7 @@ import os
 import hashlib
 import time
 from bs4 import BeautifulSoup
-from requests_toolbelt import MultipartEncoder
+# from requests_toolbelt import MultipartEncoder
 
 
 # service status
@@ -84,7 +84,8 @@ def put_flag(ip, port, flag_id, flag):
             response = session.post(
                 register_url,
                 data=data,
-                files=files
+                files=files,
+                timeout=1.2
             )
             print(f"[DEBUG] Register response: {response.status_code}")
             
@@ -112,7 +113,7 @@ def put_flag(ip, port, flag_id, flag):
         }
         
         print("[DEBUG] Sending login request...")
-        response = session.post(login_url, data=login_data)
+        response = session.post(login_url, data=login_data, timeout=1.2)
         print(f"[DEBUG] Login response: {response.status_code}")
         
         if response.status_code != 200 and response.status_code != 302:
@@ -121,7 +122,7 @@ def put_flag(ip, port, flag_id, flag):
             return None
 
         # Проверяем успешность логина
-        main_page = session.get(f"http://{ip}:{port}/")
+        main_page = session.get(f"http://{ip}:{port}/", timeout=1.2)
         if "Выйти" not in main_page.text:
             print("[ERROR] Login verification failed")
             service_corrupt()
@@ -131,7 +132,7 @@ def put_flag(ip, port, flag_id, flag):
         check_url = f"http://{ip}:{port}/api/v1/numbers/checkout/{flag_id}"
         print(f"[DEBUG] Checking flag at URL: {check_url}")
         
-        check_response = session.get(check_url)
+        check_response = session.get(check_url, timeout=1.2)
         print(f"[DEBUG] Flag page response: {check_response.status_code}")
         
         if check_response.status_code != 200:
@@ -177,13 +178,13 @@ def check_flag(ip, port, flag_id, flag):
             'password': password
         }
         
-        response = session.post(login_url, data=login_data)
+        response = session.post(login_url, data=login_data, timeout=1.2)
         if response.status_code != 200 and response.status_code != 302:
             print("[ERROR] Login failed")
             service_corrupt()
             return False
 
-        main_page = session.get(f"http://{ip}:{port}/")
+        main_page = session.get(f"http://{ip}:{port}/", timeout=1.2)
         if "Выйти" not in main_page.text:
             print("[ERROR] Login verification failed")
             service_corrupt()
@@ -193,7 +194,7 @@ def check_flag(ip, port, flag_id, flag):
         numbers_url = f"http://{ip}:{port}/api/v1/numbers"
         print(f"\n[DEBUG] Checking flag_id on numbers page...")
         
-        numbers_response = session.get(numbers_url)
+        numbers_response = session.get(numbers_url, timeout=1.2)
         if numbers_response.status_code != 200:
             print("[ERROR] Failed to get numbers page")
             service_corrupt()
@@ -222,7 +223,7 @@ def check_flag(ip, port, flag_id, flag):
 
         # Проверка флага на странице информации о номере
         check_url = f"http://{ip}:{port}/api/v1/numbers/checkout/{flag_id}"
-        api_response = session.get(check_url)
+        api_response = session.get(check_url, timeout=1.2)
         
         if api_response.status_code != 200:
             print("[ERROR] Failed to get flag page")
@@ -244,7 +245,7 @@ def check_flag(ip, port, flag_id, flag):
             return False
 
         # Проверка видимости flag_id на странице всех постов
-        posts_response = session.get(f"http://{ip}:{port}/")
+        posts_response = session.get(f"http://{ip}:{port}/", timeout=1.2)
         if posts_response.status_code != 200:
             print("[ERROR] Failed to get posts page")
             service_corrupt()
@@ -256,7 +257,7 @@ def check_flag(ip, port, flag_id, flag):
             return False
 
         # Выход из системы
-        logout_response = session.get(f"http://{ip}:{port}/logout")
+        logout_response = session.get(f"http://{ip}:{port}/logout", timeout=1.2)
         if logout_response.status_code != 200 and logout_response.status_code != 302:
             print("[ERROR] Logout failed")
             service_corrupt()
@@ -299,7 +300,7 @@ def get_random_description():
 def create_post(ip, port, session):
     try:
         # Проверяем авторизацию через главную страницу
-        main_page = session.get(f"http://{ip}:{port}/")
+        main_page = session.get(f"http://{ip}:{port}/", timeout=1.2)
         if "Выйти" not in main_page.text:
             print("Not logged in - no 'Выйти' button found")
             return False
@@ -349,7 +350,8 @@ def create_post(ip, port, session):
                 post_url,
                 data=data,
                 files=files,
-                allow_redirects=True
+                allow_redirects=True,
+                timeout=1.2
             )
         
         if response.status_code == 200 or response.status_code == 302:
@@ -374,7 +376,7 @@ def logout(ip, port, session):
         print(f"[DEBUG] Logout URL: {logout_url}")
         
         print("[DEBUG] Sending logout request...")
-        logout_response = session.get(logout_url)
+        logout_response = session.get(logout_url, timeout=1.2)
         print(f"[DEBUG] Response status code: {logout_response.status_code}")
         
         if logout_response.status_code != 200 and logout_response.status_code != 302:
